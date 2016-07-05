@@ -22,6 +22,10 @@ def get_master_playlist():
     master = hls_playlist.build_master(SOURCE_PATH)
     return Response(master, mimetype='application/vnd.apple.mpegurl')
 
+@app.route('/crossdomain.xml')
+def get_crossdomain():
+    return send_from_directory(app.static_folder, 'crossdomain.xml')
+
 @app.route('/<playlist_type>/<bitrate>.m3u8')
 def get_playlist(playlist_type, bitrate):
     playlist = hls_playlist.build_playlist(SOURCE_PATH, playlist_type, bitrate)
@@ -29,10 +33,12 @@ def get_playlist(playlist_type, bitrate):
 
 @app.route('/<playlist_type>/<bitrate>/<segno>.ts')
 def get_segment(playlist_type, bitrate, segno):
-    if not os.path.isfile(os.path.join(app.static_folder, request.path)):
+    resource_path = os.path.join(playlist_type, bitrate, '{0}.ts'.format(segno))
+
+    if not os.path.isfile(os.path.join(app.static_folder, resource_path)):
         hls_segment.transmux(SOURCE_PATH, playlist_type, bitrate, int(segno))
 
-    return send_from_directory(app.static_folder, request.path)
+    return send_from_directory(app.static_folder, resource_path)
 
 if __name__ == '__main__':
     mkdir('static')
