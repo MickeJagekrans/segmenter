@@ -35,7 +35,7 @@ def build_playlist(source_path, playlist_type, bit_rate):
     mkdir('static/{0}/{1}'.format(playlist_type, bit_rate))
 
     target_duration_tag = '#EXT-X-TARGETDURATION:{0}'.format(SEGMENT_LENGTH)
-    playlist = ['#EXTM3U', '#EXT-X-VERSION:4', target_duration_tag, '#EXT-X-PLAYLIST-TYPE:VOD']
+    playlist = ['#EXTM3U', '#EXT-X-VERSION:4', target_duration_tag, '#EXT-X-PLAYLIST-TYPE:VOD', '#EXT-X-MEDIA-SEQUENCE:1']
 
     duration = get_duration(source_path)
     segment_count = int(duration // 8)

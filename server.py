@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, glob
 from flask import Flask, Response, send_from_directory, request
