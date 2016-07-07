@@ -3,17 +3,16 @@ from subprocess import check_output, call
 
 SEGMENT_LENGTH = 8
 
-def transmux(source_path, playlist_type, bit_rate, segno):
+def segment(source_path, playlist_type, bit_rate):
     stream_index = get_stream_index(source_path, playlist_type, bit_rate)['index']
-    input_file = os.path.join('tmp', playlist_type, bit_rate, '{0}.ts'.format(segno))
-    output_file = os.path.join('static', playlist_type, bit_rate, '{0}.ts'.format(segno))
+    output_file = os.path.join('static', playlist_type, bit_rate, '%d.ts')
 
     if playlist_type == 'video':
-        cmd = 'ffmpeg -y -ss {0} -t {1} -i {2} -map 0:{3} -c:v libx264 -copyts -bsf:v h264_mp4toannexb -f mpegts -mpegts_copyts 1 {4}'
+        cmd = 'ffmpeg -y -i {0} -map 0:{1} -c:v copy -bsf:v h264_mp4toannexb -f ssegment -segment_time {2} {3}'
     else:
-        cmd = 'ffmpeg -y -ss {0} -t {1} -i {2} -map 0:{3} -c:a copy -copyts -f mpegts -mpegts_copyts 1 {4}'
+        cmd = 'ffmpeg -y -i {0} -map 0:{1} -c:a copy -f ssegment -segment_time {2} {3}'
 
-    cmd = cmd.format(SEGMENT_LENGTH * segno, SEGMENT_LENGTH, source_path, stream_index, output_file)
+    cmd = cmd.format(source_path, stream_index,  SEGMENT_LENGTH, output_file)
     call(cmd.split())
 
 # TODO: extract to separate file
