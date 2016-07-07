@@ -4,7 +4,7 @@ import os, glob, time
 from flask import Flask, Response, send_from_directory, request
 from flask_cors import CORS
 
-from bin import hls_playlist, hls_segment
+from bin import hls_playlist, hls_segment, dash
 
 SOURCE_PATH = glob.glob('media/*.mp4')[0]
 
@@ -15,7 +15,18 @@ def mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-#@app.route('/Manifest.mpd')
+@app.route('/Manifest.mpd')
+def get_manifest():
+    dash.build(SOURCE_PATH)
+    return send_from_directory(app.static_folder, os.path.join('dash', 'Manifest.mpd'))
+
+@app.route('/<filename>.mp4')
+def get_dash_descriptor(filename):
+    return send_from_directory(app.static_folder, os.path.join('dash', '{0}.mp4'.format(filename)))
+
+@app.route('/<filename>.m4s')
+def get_dash_segment(filename):
+    return send_from_directory(app.static_folder, os.path.join('dash', '{0}.m4s'.format(filename)))
 
 @app.route('/crossdomain.xml')
 def get_crossdomain():
