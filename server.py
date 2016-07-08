@@ -17,8 +17,12 @@ def mkdir(path):
 
 @app.route('/Manifest.mpd')
 def get_manifest():
-    dash.build(SOURCE_PATH)
-    return send_from_directory(app.static_folder, os.path.join('dash', 'Manifest.mpd'))
+    dash_path = os.path.join('dash', 'Manifest.mpd')
+
+    if not os.path.isfile(os.path.join(app.static_folder, dash_path)):
+        dash.build(SOURCE_PATH)
+
+    return send_from_directory(app.static_folder, dash_path)
 
 @app.route('/<filename>.mp4')
 def get_dash_descriptor(filename):
