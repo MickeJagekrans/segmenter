@@ -13,17 +13,19 @@ def mkdir(path):
 def build_master(source_path):
     master = ['#EXTM3U', '#EXT-X-VERSION:4', '#EXT-X-PLAYLIST-TYPE:VOD']
 
-    streams = get_streams(source_path)
+    audio, video = get_streams(source_path)
 
-    for i, s in enumerate(streams[0]):
+    for i in range(len(video) - len(audio)):
+        audio.append(audio[-1])
+
+    for i, s in enumerate(audio):
         entry = AUDIO_ENTRY_FORMAT.format(i, s['tags']['language'], s['bit_rate'])
         master.append(entry)
 
-    # TODO: add CODECS
-    for i, s in enumerate(streams[1]):
+    for i, s in enumerate(video):
         bit_rate = s['bit_rate']
         resolution = '{0}x{1}'.format(s['width'], s['height'])
-        bandwidth = int(bit_rate) + int(streams[0][i]['bit_rate'])
+        bandwidth = int(bit_rate) + int(audio[i]['bit_rate'])
         entry = VIDEO_ENTRY_FORMAT.format(i, resolution, bandwidth)
         master.append(entry)
         master.append('video/{0}.m3u8'.format(bit_rate))
@@ -62,10 +64,10 @@ def get_streams(source_path):
     cmd = 'ffprobe -print_format json -show_streams -v error {0}'.format(source_path)
     streams = json.loads(check_output(cmd.split()).decode('utf-8'))['streams']
 
-    audio = sorted([s for s in streams if s['codec_type'] == 'audio'], key=lambda k: int(k['bit_rate']))
-    video = sorted([s for s in streams if s['codec_type'] == 'video'], key=lambda k: int(k['bit_rate']))
+    audio = sorted([s for s in streams if s['codec_type'] == 'audio'], key=lambda k: int(k['bit_rate']), reverse=True)
+    video = sorted([s for s in streams if s['codec_type'] == 'video'], key=lambda k: int(k['bit_rate']), reverse=True)
 
-    return [audio, video]
+    return (audio, video)
 
 def get_duration(source_path):
     cmd = 'ffprobe -print_format json -v error -show_format {0}'.format(source_path)

@@ -16,7 +16,3 @@ The segmenter will segment the file into 8 second chunks.
 
 All video and audio streams in the original file will be made available with the  
 DASH segmenter (because DASH is awesome).  
-
-The HLS segmenter will link the lowest bit rate video with the lowest bit rate audio and so on.
-This means that currently the input file will have to have the same amount of audio streams as  
-it has video streams.
