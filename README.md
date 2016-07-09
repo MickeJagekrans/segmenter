@@ -10,6 +10,11 @@ Start the server with `./server.py` and point your player at either one of these
 `http://localhost:8080/hls.m3u8`  
 `http://localhost:8080/Manifest.mpd`  
 
+## Transcode source file
+
+If you want to add your own source file you will have to run the following transcoding command:  
+`ffmpeg -y -i {{source file}} -c:v libx264 -r 25 -preset slow -x264-params keyint=200:no-scenecut=-1 -c:a copy -g 50 -f mp4 {{ destination file }}`
+
 ## Description
 
 The segmenter will segment the file into 8 second chunks.  

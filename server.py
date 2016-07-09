@@ -59,6 +59,8 @@ def get_crossdomain():
 
 @app.route('/hls.m3u8')
 def get_master_playlist():
+    mkdir(os.path.join(app.static_folder, 'audio'))
+    mkdir(os.path.join(app.static_folder, 'video'))
     master = hls_playlist.build_master(SOURCE_PATH)
     return Response(master, mimetype='application/vnd.apple.mpegurl')
 
@@ -78,7 +80,5 @@ def get_segment(playlist_type, bitrate, segno):
     return send_from_directory(app.static_folder, resource_path)
 
 if __name__ == '__main__':
-    mkdir('static')
-    mkdir('static/audio')
-    mkdir('static/video')
+    mkdir(app.static_folder)
     app.run(host="0.0.0.0", port=8080)
