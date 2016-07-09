@@ -28,8 +28,6 @@ not optimal for direct viewing.
 I first tried to use byteranges but preparing the source file took as long as just segmenting  
 it in one go.  
 
-My solution to this was to build the .mpd manually from stream information and split the streams  
-in a background process, returning the .mpd as soon as possible.  
-When the split command is done (almost instantaneous) I fire off the segmentation commands  
-in background processes and wait for the files to exist on the first segment request.  
-This ensures a quick response time.
+My solution to this was to build the .mpd manually from stream information and only  
+demux + segment when the first segment request hits the server.  
+The time to execute this command is less than a second and playback will begin almost immediately.
