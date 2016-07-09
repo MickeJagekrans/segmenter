@@ -14,5 +14,5 @@ Start the server with `./server.py` and point your player at either one of these
 
 The segmenter will segment the file into 8 second chunks.  
 
-All video and audio streams in the original file will be made available with the  
-DASH segmenter (because DASH is awesome).  
+All video and audio streams in the original file will be made available for viewing as  
+separate switchable bit rate streams.
