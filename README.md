@@ -30,4 +30,4 @@ it in one go.
 
 My solution to this was to build the .mpd manually from stream information and only  
 demux + segment when the first segment request hits the server.  
-The time to execute this command is less than a second and playback will begin almost immediately.
+The time to execute this command is about 1.5 seconds, but I would really like to get it lower than that.
