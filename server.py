@@ -4,12 +4,14 @@ import os, glob, time
 from flask import Flask, Response, send_from_directory, request
 from flask_cors import CORS
 
-from bin import hls_playlist, hls_segment, dash
+from bin import hls_playlist, hls_segment, dash, build_mpd
 
 SOURCE_PATH = glob.glob('media/*.mp4')[0]
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
+
+BUILD_QUEUE = []
 
 def mkdir(path):
     if not os.path.exists(path):
@@ -17,19 +19,38 @@ def mkdir(path):
 
 @app.route('/Manifest.mpd')
 def get_manifest():
-    dash_path = os.path.join('dash', 'Manifest.mpd')
+    mpd_path = os.path.join('dash', 'Manifest.mpd')
+    mpd_static_path = os.path.join(app.static_folder, mpd_path)
 
-    if not os.path.isfile(os.path.join(app.static_folder, dash_path)):
-        dash.build(SOURCE_PATH)
+    if not os.path.isfile(mpd_static_path):
+        mkdir('tmp')
+        mkdir(os.path.join(app.static_folder, 'dash'))
+        build_mpd.build_mpd(SOURCE_PATH, mpd_static_path)
 
-    return send_from_directory(app.static_folder, dash_path)
+    return send_from_directory(app.static_folder, mpd_path)
 
 @app.route('/<filename>.mp4')
 def get_dash_descriptor(filename):
+    index = filename.split('_')[1]
+    mpd = os.path.join(app.static_folder, 'dash', '{0}.mpd'.format(index))
+
+    if not index in BUILD_QUEUE and not os.path.isfile(mpd):
+        BUILD_QUEUE.append(index)
+        dash.build(SOURCE_PATH, index)
+        BUILD_QUEUE.remove(index)
+
     return send_from_directory(app.static_folder, os.path.join('dash', '{0}.mp4'.format(filename)))
 
 @app.route('/<filename>.m4s')
 def get_dash_segment(filename):
+    index = filename.split('_')[1]
+    mpd = os.path.join(app.static_folder, 'dash', '{0}.mpd'.format(index))
+
+    if not index in BUILD_QUEUE and not os.path.isfile(mpd):
+        BUILD_QUEUE.append(index)
+        dash.build(SOURCE_PATH, index)
+        BUILD_QUEUE.remove(index)
+
     return send_from_directory(app.static_folder, os.path.join('dash', '{0}.m4s'.format(filename)))
 
 @app.route('/crossdomain.xml')

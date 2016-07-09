@@ -22,4 +22,4 @@ def get_stream_index(source_path, playlist_type, bit_rate):
     return [s for s in streams if s['codec_type'] == playlist_type and s['bit_rate'] == bit_rate][0]
 
 if __name__ == '__main__':
-    transmux('media/tears_of_steel.mp4', 'audio', '96000', 0)
+    segment('media/tears_of_steel.mp4', 'audio', '96000')

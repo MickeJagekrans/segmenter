@@ -58,9 +58,7 @@ def build_playlist(source_path, playlist_type, bit_rate):
 
     return '\n'.join(playlist)
 
-# TODO: extract to separate file
 def get_streams(source_path):
-    # TODO: return only important properties
     cmd = 'ffprobe -print_format json -show_streams -v error {0}'.format(source_path)
     streams = json.loads(check_output(cmd.split()).decode('utf-8'))['streams']
 

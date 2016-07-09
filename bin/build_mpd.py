@@ -49,9 +49,10 @@ def build_video_representation(fmt, stream, codecs):
         representation,
         'SegmentTemplate',
         timescale=timescale,
-        media='seg_{0}$Number$.m4s'.format(idx),
+        media='seg_{0}_$Number$.m4s'.format(idx),
         startNumber='1',
-        duration=str(int(timescale) * SEGMENT_LENGTH)
+        duration=str(int(timescale) * SEGMENT_LENGTH),
+        initialization='seg_{0}_init.mp4'.format(idx)
     )
 
     return representation
@@ -74,21 +75,22 @@ def build_audio_representation(fmt, stream, codecs):
     etree.SubElement(
         representation,
         'SegmentTemplate',
-        media='seg_{0}$Number$.m4s',
+        media='seg_{0}_$Number$.m4s'.format(idx),
         timescale=timescale,
         startNumber="1",
-        duration=str(int(timescale) * SEGMENT_LENGTH)
+        duration=str(int(timescale) * SEGMENT_LENGTH),
+        initialization='seg_{0}_init.mp4'.format(idx)
     )
 
     return representation
 
-def build_mpd(input_file):
+def build_mpd(input_file, output_file):
     data = get_data(input_file)
     codecs = get_codecs(input_file)
 
     duration_time = datetime.fromtimestamp(float(data[0]['duration'])).time()
 
-    h = duration_time.hour
+    h = duration_time.hour - 1
     m = duration_time.minute
     s = "{0}.{1}".format(duration_time.second, duration_time.microsecond // 1000)
 
@@ -124,12 +126,6 @@ def build_mpd(input_file):
         lang=first_video['tags']['language']
     )
 
-    etree.SubElement(
-        video_adaptation_set,
-        'SegmentTemplate',
-        initialization='Manifest_set1_init.mp4'
-    )
-
     fmt = data[0]
 
     for entry in data[2]:
@@ -152,16 +148,11 @@ def build_mpd(input_file):
         value=str(first_audio['channels'])
     )
 
-    etree.SubElement(
-        audio_adaptation_set,
-        'SegmentTemplate',
-        initialization='Manifest_set2_init.mp4'
-    )
-
     for entry in data[1]:
         audio_adaptation_set.append(build_audio_representation(fmt, entry, codecs))
 
-    print(etree.tostring(root, pretty_print=True, xml_declaration = True, encoding='UTF-8').decode('utf-8'))
+    with open(output_file, 'w+') as f:
+      f.write(etree.tostring(root, pretty_print=True, xml_declaration = True, encoding='UTF-8').decode('utf-8'))
 
 if __name__ == '__main__':
-    build_mpd('media/tears_of_steel.mp4')
+    build_mpd('media/tears_of_steel.mp4', 'static/dash/Manifest.mpd')
