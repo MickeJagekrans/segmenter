@@ -92,3 +92,4 @@ static/*
 !static/crossdomain.xml
 *.log.mbtree
 *.mp4
+tmp/
