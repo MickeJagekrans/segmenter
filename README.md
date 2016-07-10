@@ -30,8 +30,8 @@ I started by trying out ffmpeg's HLS muxer which unfortunately only supports HLS
 and thus does not create a master playlist for multiple streams, print the correct  
 EXT-X-VERSION or any EXT-X-PLAYLIST-TYPE.  
 So instead of reading the output playlists from each stream, modifying it and then  
-creating a master playlist I just decided to build the playlists from scratch on request.  
-This decision also gives me more control over what happens and when.
+creating a master playlist I just decided to build the playlists from scratch on request  
+and then segment each stream using ffmpegs ssegment muxer.
 
 ### DASH
 
