@@ -24,6 +24,15 @@ separate switchable bit rate streams.
 
 ---
 
+### HLS
+
+I started by trying out ffmpeg's HLS muxer which unfortunately only supports HLS v3  
+and thus does not create a master playlist for multiple streams, print the correct  
+EXT-X-VERSION or any EXT-X-PLAYLIST-TYPE.  
+So instead of reading the output playlists from each stream, modifying it and then  
+creating a master playlist I just decided to build the playlists from scratch on request.  
+This decision also gives me more control over what happens and when.
+
 ### DASH
 
 Initially I tried to split the source file into individual files and then run MP4Box  
