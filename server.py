@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, glob, time
+import os, glob, time, shutil
 from flask import Flask, Response, send_from_directory, request
 from flask_cors import CORS
 
@@ -16,6 +16,12 @@ BUILD_QUEUE = []
 def mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
+
+def cleanup():
+    shutil.rmtree(os.path.join(app.static_folder, 'audio'), True)
+    shutil.rmtree(os.path.join(app.static_folder, 'video'), True)
+    shutil.rmtree(os.path.join(app.static_folder, 'dash'), True)
+    shutil.rmtree('tmp')
 
 @app.route('/Manifest.mpd')
 def get_manifest():
@@ -80,5 +86,5 @@ def get_segment(playlist_type, bitrate, segno):
     return send_from_directory(app.static_folder, resource_path)
 
 if __name__ == '__main__':
-    mkdir(app.static_folder)
+    cleanup()
     app.run(host="0.0.0.0", port=8080)
