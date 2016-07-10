@@ -21,7 +21,7 @@ def cleanup():
     shutil.rmtree(os.path.join(app.static_folder, 'audio'), True)
     shutil.rmtree(os.path.join(app.static_folder, 'video'), True)
     shutil.rmtree(os.path.join(app.static_folder, 'dash'), True)
-    shutil.rmtree('tmp')
+    shutil.rmtree('tmp', True)
 
 @app.route('/Manifest.mpd')
 def get_manifest():
