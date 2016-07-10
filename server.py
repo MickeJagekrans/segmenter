@@ -9,7 +9,7 @@ from bin import hls_playlist, hls_segment, dash, build_mpd
 SOURCE_PATH = glob.glob('media/*.mp4')[0]
 
 app = Flask(__name__, static_folder='static')
-CORS(app)
+CORS(app, send_wildcard=True)
 
 BUILD_QUEUE = []
 
